@@ -17,10 +17,17 @@ class WeatherRepository {
         .build()
         .create(RainViewerApiService::class.java)
 
-    suspend fun fetchWeatherData(zip: String, apiKey: String): Pair<WeatherResponse, RainViewerResponse> {
+    data class WeatherResult(
+        val weather: WeatherResponse,
+        val radar: RainViewerResponse,
+        val lat: Double,
+        val lon: Double
+    )
+
+    suspend fun fetchWeatherData(zip: String, apiKey: String): WeatherResult {
         val geo = weatherApi.getCoordinates(zip, apiKey)
         val weather = weatherApi.getCurrentWeather(geo.lat, geo.lon, apiKey = apiKey)
         val radar = rainApi.getRadarFrames()
-        return Pair(weather, radar)
+        return WeatherResult(weather, radar, geo.lat, geo.lon)
     }
 }

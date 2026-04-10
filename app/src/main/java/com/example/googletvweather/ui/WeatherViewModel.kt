@@ -15,6 +15,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var errorMessage by mutableStateOf<String?>(null)
     var weatherData by mutableStateOf<WeatherResponse?>(null)
     var radarData by mutableStateOf<RainViewerResponse?>(null)
+    var currentLat by mutableStateOf(0.0)
+    var currentLon by mutableStateOf(0.0)
     var currentFrameIndex by mutableStateOf(0)
 
     fun updateZip(newZip: String) {
@@ -26,9 +28,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             isLoading = true
             errorMessage = null
             try {
-                val (weather, radar) = repository.fetchWeatherData(zipCode, apiKey)
-                weatherData = weather
-                radarData = radar
+                val result = repository.fetchWeatherData(zipCode, apiKey)
+                weatherData = result.weather
+                radarData = result.radar
+                currentLat = result.lat
+                currentLon = result.lon
                 startRadarLoop()
             } catch (e: Exception) {
                 errorMessage = "Failed to fetch weather: ${e.localizedMessage}"
