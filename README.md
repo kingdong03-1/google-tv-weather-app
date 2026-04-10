@@ -17,7 +17,7 @@ Allow users to enter a US zip code and view the current temperature (Fahrenheit)
 ## Technical Stack
 - **Language:** Kotlin
 - **UI Framework:** Jetpack Compose (for TV)
-- **Weather API:** TBD (Must be free/open)
+- **Weather API:** OpenWeatherMap (Current Temp) & Rain Viewer (Radar Animation) [Tentative]
 
 ## Roadmap
 - [ ] API Research: Identify free/open API providing both temp and looping radar.
