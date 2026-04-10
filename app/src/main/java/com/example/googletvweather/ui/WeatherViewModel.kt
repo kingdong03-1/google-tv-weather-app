@@ -1,6 +1,7 @@
 package com.example.googletvweather.ui
 
 import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.googletvweather.data.WeatherRepository
@@ -9,8 +10,9 @@ import kotlinx.coroutines.launch
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = WeatherRepository()
+    private val prefs = application.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE)
     
-    var zipCode by mutableStateOf("")
+    var zipCode by mutableStateOf(prefs.getString("last_zip", "") ?: "")
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
     var weatherData by mutableStateOf<WeatherResponse?>(null)
@@ -19,8 +21,16 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var currentLon by mutableStateOf(0.0)
     var currentFrameIndex by mutableStateOf(0)
 
+    init {
+        // Auto-fetch if zip exists
+        if (zipCode.isNotEmpty()) {
+            fetchWeather("3e7198296308bddb8204f0c43b1f4a8e")
+        }
+    }
+
     fun updateZip(newZip: String) {
         zipCode = newZip
+        prefs.edit().putString("last_zip", newZip).apply()
     }
 
     fun fetchWeather(apiKey: String) {
