@@ -9,7 +9,7 @@ import com.example.googletvweather.model.*
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = WeatherRepository()
+    private val repository = WeatherRepository(application)
     private val prefs = application.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE)
     
     var zipCode by mutableStateOf(prefs.getString("last_zip", "") ?: "")
@@ -24,7 +24,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     init {
         // Auto-fetch if zip exists
         if (zipCode.isNotEmpty()) {
-            fetchWeather("3e7198296308bddb8204f0c43b1f4a8e")
+            fetchWeather()
         }
     }
 
@@ -33,12 +33,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         prefs.edit().putString("last_zip", newZip).apply()
     }
 
-    fun fetchWeather(apiKey: String) {
+    fun fetchWeather() {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
             try {
-                val result = repository.fetchWeatherData(zipCode, apiKey)
+                val result = repository.fetchWeatherData(zipCode)
                 weatherData = result.weather
                 radarData = result.radar
                 currentLat = result.lat
