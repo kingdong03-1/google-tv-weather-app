@@ -26,7 +26,7 @@ class WeatherRepository {
 
     suspend fun fetchWeatherData(zip: String, apiKey: String): WeatherResult {
         val geo = weatherApi.getCoordinates(zip, apiKey)
-        val weather = weatherApi.getCurrentWeather(geo.lat, geo.lon, apiKey = apiKey)
+        val weather = weatherApi.getCurrentWeather(geo.lat, geo.lon, appid = apiKey)
         val radar = rainApi.getRadarFrames()
         return WeatherResult(weather, radar, geo.lat, geo.lon)
     }

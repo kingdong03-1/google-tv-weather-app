@@ -6,6 +6,8 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.googletvweather.data.WeatherRepository
 import com.example.googletvweather.model.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,6 +22,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     var currentLat by mutableStateOf(0.0)
     var currentLon by mutableStateOf(0.0)
     var currentFrameIndex by mutableStateOf(0)
+
+    private var radarJob: Job? = null
 
     init {
         // Auto-fetch if zip exists
@@ -53,9 +57,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun startRadarLoop() {
-        viewModelScope.launch {
+        radarJob?.cancel()
+        radarJob = viewModelScope.launch {
             while (true) {
-                kotlinx.coroutines.delay(500)
+                delay(500)
                 val frames = radarData?.radar?.past ?: emptyList()
                 if (frames.isNotEmpty()) {
                     currentFrameIndex = (currentFrameIndex + 1) % frames.size
