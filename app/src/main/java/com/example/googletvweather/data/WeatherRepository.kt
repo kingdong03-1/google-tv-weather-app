@@ -1,10 +1,12 @@
 package com.example.googletvweather.data
 
+import android.content.Context
+import com.example.googletvweather.config.Config
 import com.example.googletvweather.model.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class WeatherRepository {
+class WeatherRepository(private val context: Context) {
     private val weatherApi = Retrofit.Builder()
         .baseUrl("https://api.openweathermap.org/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -24,7 +26,8 @@ class WeatherRepository {
         val lon: Double
     )
 
-    suspend fun fetchWeatherData(zip: String, apiKey: String): WeatherResult {
+    suspend fun fetchWeatherData(zip: String): WeatherResult {
+        val apiKey = Config.getOpenWeatherApiKey(context)
         val geo = weatherApi.getCoordinates(zip, apiKey)
         val weather = weatherApi.getCurrentWeather(geo.lat, geo.lon, appid = apiKey)
         val radar = rainApi.getRadarFrames()
